@@ -68,7 +68,7 @@ void ExitOnError(char*);
     @return           -- void
  */
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-void HandleClientRequests(int*, struct sockaddr_in*);
+void HandleClientRequests(struct sockaddr_in*);
 
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -79,7 +79,7 @@ void HandleClientRequests(int*, struct sockaddr_in*);
     @return                      -- void
  */
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-void ParseClientMessage(char*, int, struct sockaddr_in*);
+void ParseClientMessage(char*, struct sockaddr_in*);
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /*  FUNCTION: XMLParser

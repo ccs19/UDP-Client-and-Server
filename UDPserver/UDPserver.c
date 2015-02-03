@@ -136,7 +136,6 @@ void AcceptConnections()
 {
     /*~~~~~~~~~~~~~~~~~~~~~Local vars~~~~~~~~~~~~~~~~~~~~~*/
     struct sockaddr_in clientAddress;
-    unsigned int clientAddressSize = sizeof(clientAddress);
     /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
     DisplayInfo();
@@ -144,8 +143,7 @@ void AcceptConnections()
     fflush(stdout);
     for(;;)
     {
-        int *ClientSocket = malloc(sizeof(int));
-        HandleClientRequests(ClientSocket, &clientAddress);
+        HandleClientRequests(&clientAddress);
     }
 }
 
@@ -172,9 +170,8 @@ void ExitOnError(char* errorMessage)
     @return           -- void
  */
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-void HandleClientRequests(int* clientSocket, struct sockaddr_in* clientAddress)
+void HandleClientRequests(struct sockaddr_in* clientAddress)
 {
-    printf("Client connected!\n");
     fflush(stdout);
     /*~~~~~~~~~~~~~~~~~~~~~Local vars~~~~~~~~~~~~~~~~~~~~~*/
     char stringBuffer[BUFFERSIZE];
@@ -182,25 +179,19 @@ void HandleClientRequests(int* clientSocket, struct sockaddr_in* clientAddress)
     socklen_t clientAddressLength = sizeof(clientAddress);
     /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
     fflush(stdout);
-    if( (recvfrom(
-            clientSocket,                    //Client socket
+    recvfrom(
+            ServerSocket,                   //Client socket
             stringBuffer,                    //Buffer for message
             sizeof(stringBuffer),            //Size of buffer
             0,                               //Flags
             (struct sockaddr*)clientAddress, //Source address
-            clientAddressLength              //Size of source address
-            )) < 0) //If recvfrom fails
-    {
-        printf("Failed to read message from client\n");
-    }
-    else //Else parse message and do something.
-    {
-        //stringBuffer[msgSize + 1] = '\0';
-        printf("Received message: %s\n", stringBuffer);
-        ParseClientMessage(stringBuffer, clientSocket, clientAddress);
-    }
-    close(clientSocket);
-    free(clientSocket);
+            &clientAddressLength              //Size of source address
+            );
+    printf("Received message: %s\n", stringBuffer);
+    ParseClientMessage(stringBuffer, clientAddress);
+
+    //close(clientSocket);
+    //free(clientSocket);
     pthread_exit(NULL);
 }
 
@@ -213,7 +204,7 @@ void HandleClientRequests(int* clientSocket, struct sockaddr_in* clientAddress)
     @return                      -- void
  */
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-void ParseClientMessage(char* clientMessage, int ClientSocket,  struct sockaddr_in* clientAddress)
+void ParseClientMessage(char* clientMessage,  struct sockaddr_in* clientAddress)
 {
     /*~~~~~~~~~~~~~~~~~~~~~Local vars~~~~~~~~~~~~~~~~~~~~~*/
     int i = 0;
@@ -266,7 +257,7 @@ void ParseClientMessage(char* clientMessage, int ClientSocket,  struct sockaddr_
         strcat(string, "<error>unknown format</error>\0");
     printf("Sending back %s\n\n", string);
     if( (sendto(
-            ClientSocket,                       //Client socket
+            ServerSocket,                       //Client socket
             string,                             //String buffer to send to client
             stringLength,                       //Length of buffer
             0,                                  //flags
