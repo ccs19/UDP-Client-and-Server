@@ -1,5 +1,6 @@
+#include <arpa/inet.h>
+#include <netdb.h>
 #include "UDPclient.h"
-
 
 
 /*
@@ -8,6 +9,11 @@
  * Project 2
  *
  */
+
+//Constants
+const int BUFFERSIZE = 256;
+
+
 
 /*
  * Creates a datagram socket and connects to a server.
@@ -19,9 +25,44 @@
  *
  * return value - the socket identifier or a negative number indicating the error if a connection could not be established
  */
-int createSocket(char * serverName, int serverPort, struct sockaddr_in * dest)
+int createSocket(char * serverName, int port, struct sockaddr_in * dest)
 {
-    return 0;
+    /*~~~~~~~~~~~~~~~~~~~~~Local vars~~~~~~~~~~~~~~~~~~~~~*/
+    int socketFD;
+    struct hostent *hostptr = gethostbyname(serverName);
+    struct in_addr ipAddress;
+    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+
+    if( (socketFD = socket(AF_INET, SOCK_DGRAM, 0) ) < 0)
+    {
+        printf("Socket creation failed\n");
+        return -1;
+    }
+    if( (hostptr = gethostbyname(serverName) ) == NULL)
+    {
+        perror("gethostbyname() failed, exit\n");
+        return -1;
+    }
+
+    //TODO remove debug code and clean this up
+    int i=0;
+
+    printf("\nIP: " );
+    while(hostptr->h_addr_list[i] != 0)
+    {
+        ipAddress.s_addr = *(u_long*)hostptr->h_addr_list[i++];
+        printf("%s\n", inet_ntoa(ipAddress));
+    }
+
+    memset((void*)dest, 0, sizeof(struct sockaddr_in));    /* zero the struct */
+    dest->sin_family = AF_INET;
+    memcpy( (void *)&dest->sin_addr, (void *)hostptr->h_addr, hostptr->h_length);
+    dest->sin_port = htons( (u_short)port );        /* set destination port number */
+
+
+    printf("port: %d\n", htons(dest->sin_port));
+    return socketFD;
 }
 /*
  * Sends a request for service to the server. This is an asynchronous call to the server,
@@ -33,11 +74,11 @@ int createSocket(char * serverName, int serverPort, struct sockaddr_in * dest)
  *
  * return   - 0, if no error; otherwise, a negative number indicating the error
  */
-int sendRequest(int sockFD, char * request, struct sockaddr_in * dest)
+int sendRequest(int socketFD, char * request, struct sockaddr_in * dest)
 {
-    return 0;
+    socklen_t destSize = sizeof(dest);
+    return sendto(socketFD, request, BUFFERSIZE, 0, (struct sockaddr *) dest, destSize);
 }
-
 /*
  * Receives the server's response formatted as an XML text string.
  *
@@ -46,9 +87,12 @@ int sendRequest(int sockFD, char * request, struct sockaddr_in * dest)
  *
  * return   - 0, if no error; otherwise, a negative number indicating the error
  */
-int receiveResponse(int sockFD, char * response)
+int receiveResponse(int socketFD, char * response)
 {
-    return 0;
+    int length = 0;
+    length = recvfrom(socketFD, response, BUFFERSIZE, 0, NULL, NULL);
+    response[length] = '\0';
+    return length;
 }
 
 /*
@@ -59,7 +103,7 @@ int receiveResponse(int sockFD, char * response)
  */
 void printResponse(char * response)
 {
-
+    printf("%s\n",response);
 }
 
 /*
@@ -69,7 +113,8 @@ void printResponse(char * response)
  *
  * return - 0, if no error; otherwise, a negative number indicating the error
  */
-int closeSocket(int sockFD)
+int closeSocket(int socketFD)
 {
+    close(socketFD);
     return 0;
 }
