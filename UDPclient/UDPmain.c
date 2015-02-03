@@ -29,6 +29,7 @@ int main(int argc, char** argv)
     }
 
     printf ("Enter a message: ");
+    fflush(stdout);
     fgets (message, 256, stdin);
     // replace new line with null character
     message[strlen(message)-1] = '\0';

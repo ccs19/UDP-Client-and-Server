@@ -29,7 +29,7 @@ int createSocket(char * serverName, int port, struct sockaddr_in * dest)
 {
     /*~~~~~~~~~~~~~~~~~~~~~Local vars~~~~~~~~~~~~~~~~~~~~~*/
     int socketFD;
-    struct hostent *hostptr = gethostbyname(serverName);
+    struct hostent *hostptr;
     struct in_addr ipAddress;
     /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
@@ -45,9 +45,7 @@ int createSocket(char * serverName, int port, struct sockaddr_in * dest)
         return -1;
     }
 
-    //TODO remove debug code and clean this up
     int i=0;
-
     printf("\nIP: " );
     while(hostptr->h_addr_list[i] != 0)
     {
@@ -59,8 +57,6 @@ int createSocket(char * serverName, int port, struct sockaddr_in * dest)
     dest->sin_family = AF_INET;
     memcpy( (void *)&dest->sin_addr, (void *)hostptr->h_addr, hostptr->h_length);
     dest->sin_port = htons( (u_short)port );        /* set destination port number */
-
-
     printf("port: %d\n", htons(dest->sin_port));
     return socketFD;
 }
@@ -76,8 +72,9 @@ int createSocket(char * serverName, int port, struct sockaddr_in * dest)
  */
 int sendRequest(int socketFD, char * request, struct sockaddr_in * dest)
 {
-    socklen_t destSize = sizeof(dest);
-    return sendto(socketFD, request, BUFFERSIZE, 0, (struct sockaddr *) dest, destSize);
+    socklen_t destSize = sizeof(struct sockaddr_in);
+    int size = sendto(socketFD, request, strlen(request), 0, (struct sockaddr *) dest, destSize);
+    return size;
 }
 /*
  * Receives the server's response formatted as an XML text string.

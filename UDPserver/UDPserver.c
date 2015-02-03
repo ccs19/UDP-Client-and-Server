@@ -177,21 +177,20 @@ void HandleClientRequests(struct sockaddr_in* clientAddress)
     char stringBuffer[BUFFERSIZE];
     bzero(stringBuffer, BUFFERSIZE);
     socklen_t clientAddressLength = sizeof(clientAddress);
+    int length;
     /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
     fflush(stdout);
-    recvfrom(
-            ServerSocket,                   //Client socket
-            stringBuffer,                    //Buffer for message
-            sizeof(stringBuffer),            //Size of buffer
-            0,                               //Flags
-            (struct sockaddr*)clientAddress, //Source address
-            &clientAddressLength              //Size of source address
+    length = recvfrom(
+            ServerSocket,                     //Server socket
+            stringBuffer,                     //Buffer for message
+            BUFFERSIZE,             //Size of buffer
+            0,                                //Flags
+            (struct sockaddr*)clientAddress,  //Source address
+            clientAddressLength              //Size of source address
             );
+    stringBuffer[length] = '\0';
     printf("Received message: %s\n", stringBuffer);
-    ParseClientMessage(stringBuffer, clientAddress);
-
-    //close(clientSocket);
-    //free(clientSocket);
+    ParseClientMessage(stringBuffer, clientAddress, length);
     pthread_exit(NULL);
 }
 
@@ -204,7 +203,7 @@ void HandleClientRequests(struct sockaddr_in* clientAddress)
     @return                      -- void
  */
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-void ParseClientMessage(char* clientMessage,  struct sockaddr_in* clientAddress)
+void ParseClientMessage(char* clientMessage,  struct sockaddr_in* clientAddress, int clientSocket)
 {
     /*~~~~~~~~~~~~~~~~~~~~~Local vars~~~~~~~~~~~~~~~~~~~~~*/
     int i = 0;
@@ -259,7 +258,7 @@ void ParseClientMessage(char* clientMessage,  struct sockaddr_in* clientAddress)
     if( (sendto(
             ServerSocket,                       //Client socket
             string,                             //String buffer to send to client
-            stringLength,                       //Length of buffer
+            clientSocket,                       //Length of buffer
             0,                                  //flags
             (struct sockaddr*)clientAddress,    //Destination
             clientAddressLength                 //Length of clientAddress
