@@ -22,6 +22,7 @@ const int MAXLISTENERS = 5;
 const int BUFFERSIZE = 256;
 const int PORT_UNDEFINED = 99999;
 const int MAX_PORT = 65535;
+const char* ServerShutdownMessage = "Server shutting down...";
 
 int main(int argc, const char* argv[])
 {
@@ -192,7 +193,6 @@ void HandleClientRequests(struct sockaddr_in* clientAddress)
     stringBuffer[length] = '\0';
     printf("Received message: %s\n", stringBuffer);
     ParseClientMessage(stringBuffer, clientAddress, length);
-    pthread_exit(NULL);
 }
 
 
@@ -247,24 +247,29 @@ void ParseClientMessage(char* clientMessage,  struct sockaddr_in* clientAddress,
         /*~~~~~~~~~~~~~~~~~~~~~Shut down response~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
     else if(strcmp(clientMessage, "<shutdown/>") == 0)
     {
-        close(ServerSocket);
-        exit(1);
+        strcat(string, ServerShutdownMessage);
     }
         /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
     else //Else we have an invalid format
         strcat(string, "<error>unknown format</error>\0");
     printf("Sending back %s\n\n", string);
-    if( (sendto(
+    if(     (sendto(
             ServerSocket,                       //Client socket
             string,                             //String buffer to send to client
-            strlen(string),                       //Length of buffer
+            strlen(string),                     //Length of buffer
             0,                                  //flags
             (struct sockaddr*)clientAddress,    //Destination
             clientAddressLength                 //Length of clientAddress
 
-    )) < 0) //If sendto fails
+            )) < 0) //If sendto fails
         printf("Failed to send\n");
+    if(strcmp(string, ServerShutdownMessage) == 0) //If server shutdown message received
+    {
+        close(ServerSocket);
+        exit(1);
+    }
+
 }
 
 
