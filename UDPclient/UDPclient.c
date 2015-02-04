@@ -87,7 +87,8 @@ int sendRequest(int socketFD, char * request, struct sockaddr_in * dest)
 int receiveResponse(int socketFD, char * response)
 {
     int length = 0;
-    length = recvfrom(socketFD, response, BUFFERSIZE, 0, NULL, NULL);
+    socklen_t bufSize = (socklen_t)BUFFERSIZE;
+    length = recvfrom(socketFD, response, bufSize, 0, NULL, NULL);
     response[length] = '\0';
     return length;
 }

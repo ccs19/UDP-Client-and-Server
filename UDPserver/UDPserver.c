@@ -177,16 +177,17 @@ void HandleClientRequests(struct sockaddr_in* clientAddress)
     char stringBuffer[BUFFERSIZE];
     bzero(stringBuffer, BUFFERSIZE);
     socklen_t clientAddressLength = sizeof(clientAddress);
+    socklen_t bufSize = BUFFERSIZE;
     int length;
     /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
     fflush(stdout);
     length = recvfrom(
             ServerSocket,                     //Server socket
             stringBuffer,                     //Buffer for message
-            BUFFERSIZE,             //Size of buffer
+            bufSize,             //Size of buffer
             0,                                //Flags
             (struct sockaddr*)clientAddress,  //Source address
-            clientAddressLength              //Size of source address
+            &clientAddressLength              //Size of source address
             );
     stringBuffer[length] = '\0';
     printf("Received message: %s\n", stringBuffer);
@@ -211,8 +212,7 @@ void ParseClientMessage(char* clientMessage,  struct sockaddr_in* clientAddress,
     char token[BUFFERSIZE];  //Token to use for echo reply
     string[0] = '\0';
     const int NUMLOADAVG = 3; //Number of load averages queries
-    socklen_t stringLength= sizeof(string);
-    socklen_t clientAddressLength = sizeof(clientAddress);
+    socklen_t clientAddressLength = sizeof(struct sockaddr_in);
     /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 
@@ -258,7 +258,7 @@ void ParseClientMessage(char* clientMessage,  struct sockaddr_in* clientAddress,
     if( (sendto(
             ServerSocket,                       //Client socket
             string,                             //String buffer to send to client
-            clientSocket,                       //Length of buffer
+            strlen(string),                       //Length of buffer
             0,                                  //flags
             (struct sockaddr*)clientAddress,    //Destination
             clientAddressLength                 //Length of clientAddress
