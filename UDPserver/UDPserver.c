@@ -34,7 +34,8 @@ int main(int argc, const char* argv[])
         port = 0;
     else if(atoi(argv[1]) <= 0 || atoi(argv[1]) > MAX_PORT) //Checking valid port bounds
         printf("Invalid port number\n");
-    else {
+    else
+    {
         if (port == PORT_UNDEFINED) port = atoi(argv[1]); //If port specified at command line
     }
 
@@ -60,10 +61,10 @@ void OpenSocket(int port)
     if( ( ServerSocket =  socket(PF_INET, SOCK_DGRAM, 0) ) <  0)  //If socket fails
         ExitOnError("Error creating socket");
 
-    if(gethostname(hostname, sizeof(hostname)) < 0)                         //If getting hostname fails
+    if(gethostname(hostname, sizeof(hostname)) < 0)               //If getting hostname fails
         ExitOnError("Error acquiring hostname. Exiting");
 
-    if( ( HostByName = gethostbyname(hostname) ) ==  NULL)                  //If gethostbyname fails print error message, exit
+    if( ( HostByName = gethostbyname(hostname) ) ==  NULL)        //If gethostbyname fails print error message, exit
     {
         herror("GetHostByName failed. Error: ");
         exit(1);
@@ -71,7 +72,6 @@ void OpenSocket(int port)
     InitAddressStruct(port);
     BindSocket();
 }
-
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /*  FUNCTION:   InitAddressStruct
@@ -87,7 +87,6 @@ void InitAddressStruct(int port)
     memcpy( (void *)&ServerAddress.sin_addr, (void *)HostByName->h_addr, HostByName->h_length);
     ServerAddress.sin_port = htons(port);
 }
-
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /*  FUNCTION:   DisplayInfo
@@ -113,7 +112,6 @@ void DisplayInfo()
     fflush(stdout);
 }
 
-
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /*  FUNCTION:   BindSocket
     Binds the server socket
@@ -125,7 +123,6 @@ void BindSocket()
     if( ( bind( ServerSocket, (struct sockaddr *) &ServerAddress, sizeof(ServerAddress)) )  < 0)
         ExitOnError("Failed to bind socket"); //If binding of socket fails
 }
-
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /*  FUNCTION:   AcceptConnections
@@ -148,7 +145,6 @@ void AcceptConnections()
     }
 }
 
-
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /*  FUNCTION:   ExitOnError
     Prints a message to stdout and exits
@@ -161,7 +157,6 @@ void ExitOnError(char* errorMessage)
     printf("%s\n", errorMessage);
     exit(1);
 }
-
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /*  FUNCTION:   HandleClientRequests
@@ -195,7 +190,6 @@ void HandleClientRequests(struct sockaddr_in* clientAddress)
     ParseClientMessage(stringBuffer, clientAddress, length);
 }
 
-
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /*  FUNCTION:   ParseClientMessage
     Handles the message for the client and sends a message back to the client
@@ -214,7 +208,6 @@ void ParseClientMessage(char* clientMessage,  struct sockaddr_in* clientAddress,
     const int NUMLOADAVG = 3; //Number of load averages queries
     socklen_t clientAddressLength = sizeof(struct sockaddr_in);
     /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
 
     /*~~~~~~~~~~~~~~~~~~~~~Load avg response~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
     if(strcmp(clientMessage, "<loadavg/>") == 0)
@@ -269,11 +262,7 @@ void ParseClientMessage(char* clientMessage,  struct sockaddr_in* clientAddress,
         close(ServerSocket);
         exit(1);
     }
-
 }
-
-
-
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /*  FUNCTION: XMLParser
