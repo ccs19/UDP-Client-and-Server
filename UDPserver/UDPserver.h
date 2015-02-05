@@ -3,8 +3,8 @@
 #ifndef UDPSERVER_H
 #define UDPSERVER_H
 
-#include <bits/pthreadtypes.h>
-
+//#include <bits/pthreadtypes.h>
+#include <sys/types.h>
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /*  FUNCTION:   OpenSocket
     Opens the listening socket and resolves the host name.
