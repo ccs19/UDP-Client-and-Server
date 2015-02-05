@@ -3,7 +3,7 @@ CFLAGS = -g -Wall
 OBJECTS = *.c
 NAME = UDPclient
 TODELETE = $(NAME) *.o
-LIBS = -lpthread -lrt
+LIBS = -lpthread
 
 $(NAME) : $(OBJECTS)
 	$(CC) $(CFLAGS) $(OBJECTS) -o $(NAME) $(LIBS)
