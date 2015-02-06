@@ -19,7 +19,7 @@ public class UDPmain {
     {
         UDPclient client;
         String    serverName;
-        String    req;
+        String    req = "";
 
         if (args.length != 2) {
             System.err.println("Usage: UDPclient <serverName> <port number>\n");
@@ -50,7 +50,7 @@ public class UDPmain {
         req = System.console().readLine();
 
         if (client.sendRequest(req, serverName, portNum) < 0) {
-			client.close();
+            client.closeSocket();
             return;
         }
 
@@ -58,7 +58,7 @@ public class UDPmain {
         if (response != null) {
             UDPclient.printResponse(response.trim());
         }
-		else {
+        else {
             System.err.println ("incorrect response from server");
         }
 

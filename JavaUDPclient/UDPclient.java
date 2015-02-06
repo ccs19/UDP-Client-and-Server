@@ -1,45 +1,8 @@
+/**
+ * Created by brett on 2/5/15.
+ */
 import java.io.*;
 import java.net.*;
-
-public class TCPClient {
-    public static void main(String args[]) throws Exception
-    {
-        if(args.length != 2)
-        {
-            System.out.println("Usage: TCPclient <hostname> <args>");
-        }
-        else
-        {
-            InetAddress address = InetAddress.getByName(args[0]);
-            int port = Integer.parseInt(args[1]);
-            System.out.println("IP: " + args[0]);
-            Socket clientSock = new Socket(address, port);
-
-            PrintWriter out = new PrintWriter(clientSock.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(clientSock.getInputStream()));
-            BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
-
-            System.out.println("Input text to send: ");
-            String textToSend = read.readLine();
-            textToSend = textToSend + '\0';
-            out.print(textToSend);
-            out.flush();
-
-            //Response
-            String response = in.readLine();
-            System.out.println(response);
-
-            //clean up
-            out.close();
-            in.close();
-            read.close();
-            clientSock.close();
-
-        }
-    }
-}
-
-
 import java.net.DatagramSocket;
 
 /*
@@ -53,69 +16,121 @@ import java.net.DatagramSocket;
 
 public class UDPclient
 {
-	private DatagramSocket _socket; // the socket for communication with a server
-	
-	/**
-	 * Constructs a TCPclient object.
-	 */
-	public UDPclient()
-	{
-	}
-	
-	/**
-	 * Creates a datagram socket and binds it to a free port.
-	 *
-	 * @return - 0 or a negative number describing an error code if the connection could not be established
-	 */
-	public int createSocket()
-	{
-		
-	}
+    private DatagramSocket _socket; // the socket for communication with a server
+    private PrintWriter out;
+    private BufferedReader in;
+    DatagramPacket packet;
+    byte[] buf;
 
-	/**
-	 * Sends a request for service to the server. Do not wait for a reply in this function. This will be
-	 * an asynchronous call to the server.
-	 * 
-	 * @param request - the request to be sent
-	 * @param hostAddr - the ip or hostname of the server
-	 * @param port - the port number of the server
-	 *
-	 * @return - 0, if no error; otherwise, a negative number indicating the error
-	 */
-	public int sendRequest(String request, String hostAddr, int port)
-	{
-		
-	}
-	
-	/**
-	 * Receives the server's response following a previously sent request.
-	 *
-	 * @return - the server's response or NULL if an error occurred
-	 */
-	public String receiveResponse()
-	{
-		
-	}
-	
-	/*
+    /**
+     * Constructs a UDPclient object.
+     */
+    public UDPclient()
+    {
+    }
+
+    /**
+     * Creates a datagram socket and binds it to a free port.
+     *
+     * @return - 0 or a negative number describing an error code if the connection could not be established
+     */
+    public int createSocket()
+    {
+        try {
+            _socket = new DatagramSocket();
+        }
+        catch(Exception e)
+        {
+            System.out.println("New socket failed");
+            return -1;
+        }
+        return 0;
+    }
+
+    /**
+     * Sends a request for service to the server. Do not wait for a reply in this function. This will be
+     * an asynchronous call to the server.
+     *
+     * @param request - the request to be sent
+     * @param hostAddr - the ip or hostname of the server
+     * @param port - the port number of the server
+     *
+     * @return - 0, if no error; otherwise, a negative number indicating the error
+     */
+    public int sendRequest(String request, String hostAddr, int port)
+    {
+        buf = new byte[256];
+
+        try{
+            request = request + '\0';
+//            out.print(request);
+//            out.flush();
+            InetAddress address = InetAddress.getByName(hostAddr);
+            packet = new DatagramPacket(buf, buf.length, address, port);
+            _socket.send(packet);
+            System.out.println("Sent: " + request);
+        }
+        catch(Exception e)
+        {
+            System.out.println("sendRequest failed");
+            return -1;
+        }
+        return 0;
+    }
+
+    /**
+     * Receives the server's response following a previously sent request.
+     *
+     * @return - the server's response or NULL if an error occurred
+     */
+    public String receiveResponse()
+    {
+        packet = new DatagramPacket(buf, buf.length);
+        String response;
+
+        try{
+            _socket.receive(packet);
+            response = new String(packet.getData(), 0, packet.getLength());
+//            response = in.readLine();
+            System.out.print("Received: ");
+        }
+        catch (Exception e)
+        {
+            System.out.println("receiveResponse() failed");
+            return null;
+        }
+        return response;
+    }
+
+    /*
     * Prints the response to the screen in a formatted way.
     *
     * response - the server's response as an XML formatted string
     *
     */
-	public static void printResponse(String response)
-	{
-	
-	}
- 
+    public static void printResponse(String response)
+    {
+        System.out.println("Received " + response);
+    }
 
-	/*
-	 * Closes an open socket.
-	 *
+
+    /*
+     * Closes an open socket.
+     *
     * @return - 0, if no error; otherwise, a negative number indicating the error
-	 */
-	public int closeSocket() 
-	{
-		
-	}
+     */
+    public int closeSocket()
+    {
+        try{
+//            in.close();
+//            out.close();
+            _socket.close();
+        }
+        catch(Exception e)
+        {
+            System.out.println("closeSocket() failed");
+            return -1;
+        }
+        return 0;
+    }
 }
