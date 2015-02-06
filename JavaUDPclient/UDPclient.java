@@ -61,6 +61,10 @@ public class UDPclient
     {
         buf = new byte[256];
 
+        for(int i = 0; i < request.length(); i++) {
+            buf[i] = (byte)request.charAt(i);
+        }
+
         try{
             request = request + '\0';
 //            out.print(request);
