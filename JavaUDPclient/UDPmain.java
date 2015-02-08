@@ -51,7 +51,7 @@ public class UDPmain {
         req = System.console().readLine();
         //suggested change
         //Scanner scanner = new Scanner(System.in);
-        /req = scanner.nextLine();
+        //req = scanner.nextLine();
 
         if (client.sendRequest(req, serverName, portNum) < 0) {
             client.closeSocket();
