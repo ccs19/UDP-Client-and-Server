@@ -172,7 +172,7 @@ void HandleClientRequests(struct sockaddr_in* clientAddress)
     /*~~~~~~~~~~~~~~~~~~~~~Local vars~~~~~~~~~~~~~~~~~~~~~*/
     char stringBuffer[BUFFERSIZE];
     bzero(stringBuffer, BUFFERSIZE);
-    socklen_t clientAddressLength = sizeof(clientAddress);
+    socklen_t clientAddressLength = sizeof(struct sockaddr_in);
     socklen_t bufSize = BUFFERSIZE;
     int length;
     /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -186,6 +186,7 @@ void HandleClientRequests(struct sockaddr_in* clientAddress)
             &clientAddressLength              //Size of source address
             );
     stringBuffer[length] = '\0';
+    printf("Client IP: %s\n", inet_ntoa(clientAddress->sin_addr));
     printf("Received message: %s\n", stringBuffer);
     ParseClientMessage(stringBuffer, clientAddress, length);
 }
