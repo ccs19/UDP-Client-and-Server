@@ -40,7 +40,7 @@ int main(int argc, char** argv)
         exit (1);
     }
 
-    if (receiveResponse(sockfd, response, 256) < 0) {
+    if (receiveResponse(sockfd, response) < 0) {
         closeSocket (sockfd);
         exit (1);
     }
