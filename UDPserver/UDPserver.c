@@ -186,7 +186,9 @@ void HandleClientRequests(struct sockaddr_in* clientAddress)
             &clientAddressLength              //Size of source address
             );
     stringBuffer[length] = '\0';
+    puts("");
     printf("Client IP: %s\n", inet_ntoa(clientAddress->sin_addr));
+    printf("Client port: %hu\n", ntohs(clientAddress->sin_port));
     printf("Received message: %s\n", stringBuffer);
     ParseClientMessage(stringBuffer, clientAddress, length);
 }
