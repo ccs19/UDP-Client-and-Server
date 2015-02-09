@@ -1,4 +1,3 @@
-
 #include "UDPclient.h"
 /*
  * A test program to start a client and connect it to a specified server.
@@ -41,7 +40,7 @@ int main(int argc, char** argv)
         exit (1);
     }
 
-    if (receiveResponse(sockfd, response) < 0) {
+    if (receiveResponse(sockfd, response, 256) < 0) {
         closeSocket (sockfd);
         exit (1);
     }
