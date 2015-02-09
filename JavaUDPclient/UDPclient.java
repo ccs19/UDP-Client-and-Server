@@ -17,8 +17,6 @@ import java.net.DatagramSocket;
 public class UDPclient
 {
     private DatagramSocket _socket; // the socket for communication with a server
-    private PrintWriter out;
-    private BufferedReader in;
     DatagramPacket packet;
     byte[] buf;
 
@@ -67,8 +65,6 @@ public class UDPclient
 
         try{
             request = request + '\0';
-//            out.print(request);
-//            out.flush();
             InetAddress address = InetAddress.getByName(hostAddr);
             packet = new DatagramPacket(buf, buf.length, address, port);
             _socket.send(packet);
@@ -95,7 +91,6 @@ public class UDPclient
         try{
             _socket.receive(packet);
             response = new String(packet.getData(), 0, packet.getLength());
-//            response = in.readLine();
             System.out.print("Received: ");
         }
         catch (Exception e)
@@ -126,8 +121,6 @@ public class UDPclient
     public int closeSocket()
     {
         try{
-//            in.close();
-//            out.close();
             _socket.close();
         }
         catch(Exception e)
