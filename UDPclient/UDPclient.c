@@ -84,10 +84,10 @@ int sendRequest(int socketFD, char * request, struct sockaddr_in * dest)
  *
  * return   - 0, if no error; otherwise, a negative number indicating the error
  */
-int receiveResponse(int socketFD, char * response)
+int receiveResponse(int socketFD, char * response, int size)
 {
     int length = 0;
-    socklen_t bufSize = (socklen_t)BUFFERSIZE;
+    socklen_t bufSize = (socklen_t)size;
     length = recvfrom(socketFD, response, bufSize, 0, NULL, NULL);
     response[length] = '\0';
     return length;
