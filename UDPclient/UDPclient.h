@@ -44,7 +44,7 @@ int sendRequest(int, char*, struct sockaddr_in*);
  *
  * return   - 0, if no error; otherwise, a negative number indicating the error
  */
-int receiveResponse(int, char*, int);
+int receiveResponse(int, char*);
 
 /*
  * Prints the response to the screen in a formatted way.
